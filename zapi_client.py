@@ -1,9 +1,6 @@
 """
-Camada de integração com a Z-API.
-
-Responsável apenas por montar a requisição HTTP de envio de mensagem
-de texto via WhatsApp. Documentação de referência:
-https://developer.z-api.io/
+Envia mensagens de texto pelo WhatsApp usando a Z-API.
+Documentação: https://developer.z-api.io/
 """
 
 from __future__ import annotations
@@ -24,6 +21,17 @@ class ZApiError(Exception):
     """Levantada quando a Z-API retorna um erro ou resposta inesperada."""
 
 
+def _validate_phone(phone: str) -> None:
+    """Confere se o telefone só tem dígitos e um tamanho plausível, antes de gastar uma chamada de API com ele."""
+    if not phone.isdigit():
+        raise ZApiError(f"Telefone inválido (deve conter apenas dígitos): '{phone}'")
+    if not (10 <= len(phone) <= 15):
+        raise ZApiError(
+            f"Telefone com tamanho inesperado ({len(phone)} dígitos): '{phone}'. "
+            "Esperado formato DDI+DDD+número, ex: 5511999999999."
+        )
+
+
 def _send_text_url() -> str:
     return (
         f"{ZAPI_BASE_URL}/instances/{settings.zapi_instance_id}"
@@ -38,8 +46,10 @@ def send_text_message(phone: str, message: str) -> dict:
     :param phone: número em formato internacional, somente dígitos (ex: 5511999999999)
     :param message: texto já personalizado a ser enviado
     :return: corpo da resposta JSON retornada pela Z-API
-    :raises ZApiError: se a requisição falhar ou a Z-API retornar erro
+    :raises ZApiError: se a requisição falhar, o telefone for inválido, ou a Z-API retornar erro
     """
+    _validate_phone(phone)
+
     payload = {"phone": phone, "message": message}
     headers = {
         "Content-Type": "application/json",

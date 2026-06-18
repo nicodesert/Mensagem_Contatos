@@ -1,8 +1,6 @@
 """
-Camada de acesso ao Supabase.
-
-Responsável apenas por buscar os contatos ativos que vão receber
-a mensagem. Mantém a lógica de banco isolada do resto da aplicação.
+Busca os contatos ativos no Supabase. Toda a lógica de banco fica
+isolada aqui, separada do resto da aplicação.
 """
 
 from __future__ import annotations

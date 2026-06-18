@@ -1,9 +1,7 @@
 """
-Carrega e valida as variáveis de ambiente usadas pelo projeto.
-
-Mantém toda a leitura do .env centralizada aqui para que o resto do
-código não precise saber de onde vêm os valores, apenas importar
-o objeto `settings`.
+Carrega e valida as variáveis de ambiente do projeto.
+O resto do código importa só o objeto `settings`, sem se preocupar
+com de onde os valores vêm.
 """
 
 from __future__ import annotations
@@ -78,7 +76,6 @@ def load_settings() -> Settings:
     )
 
 
-# Carregado uma única vez, no import do módulo. Se uma variável obrigatória
-# estiver faltando, ConfigError é levantada aqui — main.py trata isso e
-# imprime uma mensagem amigável em vez de um traceback completo.
+# Carrega uma vez só, no import do módulo. Se faltar alguma variável
+# obrigatória, a ConfigError sobe até main.py, que trata isso direto.
 settings = load_settings()

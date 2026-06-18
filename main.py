@@ -1,10 +1,8 @@
 """
-Ponto de entrada do desafio: lê contatos do Supabase e envia
-mensagens personalizadas via Z-API.
+Lê os contatos do Supabase e envia uma mensagem personalizada
+para cada um via Z-API.
 
-Uso:
-    python main.py
-
+Uso: python main.py
 Variáveis de ambiente necessárias: veja .env.example
 """
 
@@ -21,12 +19,19 @@ logger = logging.getLogger("main")
 
 try:
     from config import ConfigError, settings
-except Exception as exc:  # ConfigError é levantada na primeira importação de config
+except Exception as exc:  # a ConfigError sobe aqui, na primeira importação de config
     logger.error("Erro de configuração: %s", exc)
     sys.exit(1)
 
 from supabase_client import Contact, fetch_contacts
 from zapi_client import ZApiError, send_text_message
+
+
+def mask_phone(phone: str) -> str:
+    """Mascara o telefone nos logs, mantendo só os 4 últimos dígitos visíveis."""
+    if len(phone) <= 4:
+        return "*" * len(phone)
+    return "*" * (len(phone) - 4) + phone[-4:]
 
 
 def build_message(contact: Contact) -> str:
@@ -36,15 +41,16 @@ def build_message(contact: Contact) -> str:
 def send_to_contact(contact: Contact) -> bool:
     """Envia a mensagem para um único contato. Retorna True em caso de sucesso."""
     message = build_message(contact)
-    logger.info("Enviando mensagem para %s (%s)...", contact.nome_contato, contact.telefone)
+    masked = mask_phone(contact.telefone)
+    logger.info("Enviando mensagem para %s (%s)...", contact.nome_contato, masked)
 
     try:
         send_text_message(phone=contact.telefone, message=message)
     except ZApiError as exc:
-        logger.error("Falha ao enviar mensagem para %s (%s): %s", contact.nome_contato, contact.telefone, exc)
+        logger.error("Falha ao enviar mensagem para %s (%s): %s", contact.nome_contato, masked, exc)
         return False
 
-    logger.info("Mensagem enviada com sucesso para %s (%s).", contact.nome_contato, contact.telefone)
+    logger.info("Mensagem enviada com sucesso para %s (%s).", contact.nome_contato, masked)
     return True
 
 
