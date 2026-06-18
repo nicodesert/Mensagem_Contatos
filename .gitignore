@@ -1,0 +1,23 @@
+# Ambiente
+.env
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+build/
+dist/
+
+# Logs
+*.log
+logs/
+
+# IDE / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
