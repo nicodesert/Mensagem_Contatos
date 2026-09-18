@@ -66,8 +66,6 @@ cp .env.example .env
 | `MAX_CONTATOS` | Quantos contatos recebem a mensagem por execução (padrão `3`) | — |
 | `MENSAGEM_TEMPLATE` | Template da mensagem. Precisa conter `{nome_contato}` | — |
 
-> ⚠️ O arquivo `.env` nunca deve ser commitado — ele já está no `.gitignore`.
-
 ## 3. Instalação
 
 ```bash
